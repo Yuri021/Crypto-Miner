@@ -1,0 +1,166 @@
+#!/bin/sh -e
+#=======================
+#SCRIPT BY: @Fenix_linux
+#Pool Miner Script
+#=======================
+#Linux [Ubuntu - Debian]
+bash=$(echo $BASH)
+
+
+if [ "$bash" = "/bin/bash" ]
+then
+exit 0
+fi
+#VAR
+wallet=$2
+core=$3
+#OFF_VAR
+
+#Variaveis Cores
+cor="\033["
+cor_off="\033[0m"
+ver="31m"
+verd="32m"
+ama="33m"
+azu="34m"
+rox="35m"
+ver_f="41m"
+verd_f="42m"
+ama_f="43m"
+azu_f="44m"
+rox_f="45m"
+ve=$cor$ver
+vr=$cor$verd
+am=$cor$ama
+az=$cor$azu
+rx=$cor$rox
+ve_f=$cor$ver_f
+vr_f=$cor$verd_f
+am_f=$cor$ama_f
+az_f=$cor$azu_f
+rx_f=$cor$rox_f
+#/Cores
+clear
+version=1.2
+echo "$am =============================="
+echo "$vr ADVANCED MINER$ve VERSAO:$version"
+echo "$am ==============================$cor_off"
+if [ "$1" = ""  ]
+then
+echo "$am =============================="
+echo "$ve_f ERROR:$cor_off
+$az SEGUINTE ERRO ENCONTRADO:
+$rx  -ALGORITMO NAO SELECIONADO"
+echo "$am ==============================$cor_off"
+exit 0
+fi
+opt=$1
+case $opt in
+#YESC =====(1)
+*-yescrypt)
+echo "$az_f VOCE SELECIONOU$vr yescrypt$rx ZPOOl.CA $cor_off"
+#ERROr
+if [ "$2" = ""  ]
+then
+echo "$am =============================="
+echo "$ve_f ERROR:$cor_off
+$az SEGUINTE ERRO ENCONTRADO:
+$rx  -CARTEIRA NAO ADICIONADA"
+echo "$am =============================="
+exit 0
+fi
+if [ "$3" = ""  ]
+then
+echo "$am =============================="
+echo "$ve_f ERROR:$cor_off
+$az SEGUINTE ERRO ENCONTRADO:
+$rx  -NUMERO DE CORE NAO ADICIONADO"
+echo "$am =============================="
+exit 0
+fi
+echo "$ve_f INICIANDO INSTALACAO $am_f BAIXANDO PACOTES$cor_off"
+echo "$ve AGUARDE..."
+sudo apt-get update >/dev/null
+sudo apt-get install git -y >/dev/null
+sudo apt-get install screen -y >/dev/null
+sudo apt-get install build-essential libcurl4-openssl-dev gcc make git nano autoconf automake -y >/dev/null
+sudo rm -rf yescrypt &>/dev/null
+echo "$az \n"
+git clone https://github.com/noncepool/cpuminer-yescrypt.git
+sudo mv cpuminer-yescrypt yescrypt
+echo "$cor_off \n"
+echo "$vr_f COMPILANDO...$cor_off \n"
+sleep 2
+cd yescrypt
+./autogen.sh
+./configure CFLAGS="-O3"
+sudo make
+sudo rm /usr/local/bin/yescrypt &>/dev/null
+cd yescrypt
+mv minerd yescrypt
+sudo mv yescrypt /usr/local/bin/
+cd ../
+sudo rm -rf yescrypt
+sudo chmod +x /usr/local/bin/yescrypt
+if [ "$3" = ""  ]
+then
+screen -dmS yescypt yescrypt -a yescrypt -o stratum+tcp://mine.zpool.ca:6233 -u $wallet -R 30
+else
+screen -dmS yescypt yescrypt -a yescrypt -o stratum+tcp://mine.zpool.ca:6233 -u $wallet -t $core -R 30
+fi
+clear
+sleep 2
+echo "$ve_f MINERAÇAO INICIADA UTILIZE (screen -x yescrypt)$cor_off"
+;;
+*-crypt)
+echo "$az_f VOCE SELECIONOU$vr cryptonight$rx SUPPORTXMR.COM $cor_off"
+#ERROr
+if [ "$2" = ""  ]
+then
+echo "$am =============================="
+echo "$ve_f ERROR:$cor_off
+$az SEGUINTE ERRO ENCONTRADO:
+$rx  -CARTEIRA NAO ADICIONADA"
+echo "$am =============================="
+exit 0
+fi
+if [ "$3" = ""  ]
+then
+echo "$am =============================="
+echo "$ve_f ERROR:$cor_off
+$az SEGUINTE ERRO ENCONTRADO:
+$rx  -NUMERO DE CORE NAO ADICIONADO"
+echo "$am =============================="
+exit 0
+fi
+echo "$ve_f INICIANDO INSTALACAO $am_f BAIXANDO PACOTES$cor_off"
+echo "$ve AGUARDE...$cor_off"
+sudo apt-get update >/dev/null
+sudo apt-get install git -y >/dev/null
+sudo apt-get install screen -y >/dev/null
+sudo apt-get install build-essential libcurl4-openssl-dev gcc make git nano autoconf automake -y >/dev/null
+sudo rm -r cpuminer-multi
+echo "$az"
+sudo git clone https://github.com/OhGodAPet/cpuminer-multi.git cpuminer-multi
+echo "$cor_off \n"
+echo "$vr_f COMPILANDO...$cor_off \n"
+sleep 2
+sudo mv cpuminer-multi miner
+cd miner
+sudo chmod +x autogen.sh
+sudo ./autogen.sh
+sudo ./configure CFLAG=S"-march=native"
+sudo make
+sudo make install
+sleep 3
+sudo mv minerd /usr/local/bin/
+if [ "$3" = ""  ]
+then
+screen -dmS crypt minerd -a cryptonight -o stratum+tcp://pool.supportxmr.com:3333 -u $wallet -p x
+else
+screen -dmS crypt minerd -a cryptonight -o stratum+tcp://pool.supportxmr.com:3333 -u $wallet -t $core -p x
+fi
+clear
+sleep 2
+echo "$ve_f MINERAÇAO INICIADA UTILIZE (screen -x crypt)$cor_off"
+esac
